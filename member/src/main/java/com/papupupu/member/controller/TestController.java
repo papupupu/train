@@ -10,4 +10,7 @@ public class TestController {
     public String hellow(){
         return "hellow";
     }
+
+    @GetMapping("test")
+    public String test(){return "test";}
 }
