@@ -1,4 +1,4 @@
-package com.papupupu.member.controller;
+package com.papupupu.train.member.controller;
 
 
 import org.springframework.web.bind.annotation.GetMapping;
