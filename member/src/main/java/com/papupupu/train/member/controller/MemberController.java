@@ -1,8 +1,11 @@
 package com.papupupu.train.member.controller;
 
+import com.papupupu.train.common.resp.CommonResp;
+import com.papupupu.train.member.req.MemberRegisterReq;
 import com.papupupu.train.member.service.MemberService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -10,10 +13,20 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/member")
 public class MemberController {
     @Autowired
-    private MemberService service;
+    private MemberService memberService;
 
     @GetMapping("/count")
-    public Integer count(){
-        return service.count();
+    public CommonResp count(){
+        int count = memberService.count();
+        CommonResp<Integer> resp = CommonResp.success(count);
+        return resp;
     }
+
+    @PostMapping("/register")
+    public CommonResp register(MemberRegisterReq memberRegisterReq){
+        long id = memberService.register(memberRegisterReq);
+        CommonResp resp = CommonResp.success(id);
+        return resp;
+    }
+
 }
