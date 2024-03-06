@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.validation.BindException;
 
 @ControllerAdvice
 @Log
@@ -43,6 +44,20 @@ public class ControllerExceptionHandler {
         LOG.error("业务异常:{}", e.getE().getDesc());
         CommonResp resp = CommonResp.error();
         resp.setMessage(e.getE().getDesc());
+        return resp;
+    }
+
+    /**
+     * 所有校验异常统一处理
+     * @param e
+     * @return
+     */
+    @ExceptionHandler(value = BindException.class)
+    @ResponseBody
+    public CommonResp exceptionHandler(BindException e){
+        LOG.error("校验异常:{}", e.getBindingResult().getAllErrors().get(0).getDefaultMessage());
+        CommonResp resp = CommonResp.error();
+        resp.setMessage(e.getBindingResult().getAllErrors().get(0).getDefaultMessage());
         return resp;
     }
 
