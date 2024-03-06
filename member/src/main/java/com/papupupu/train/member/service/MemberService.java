@@ -1,5 +1,6 @@
-package com.papupupu.train.member.mapper;
+package com.papupupu.train.member.service;
 
+import com.papupupu.train.member.mapper.MemberMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -9,6 +10,6 @@ public class MemberService {
     private MemberMapper mapper;
 
     public int count(){
-        return mapper.count();
+        return Math.toIntExact(mapper.countByExample(null));
     }
 }
