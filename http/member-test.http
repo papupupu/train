@@ -8,7 +8,11 @@ GET http://localhost:8001/member/member/count
 POST http://localhost:8000/member/member/register
 Content-Type: application/x-www-form-urlencoded
 
-mobile=213123123
+mobile=18670142513
 ###
 
+POST http://localhost:8000/member/member/send-code
+Content-Type: application/x-www-form-urlencoded
+
+mobile=18670142514
 ###
