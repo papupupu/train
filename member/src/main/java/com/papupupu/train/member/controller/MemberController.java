@@ -1,8 +1,10 @@
 package com.papupupu.train.member.controller;
 
 import com.papupupu.train.common.resp.CommonResp;
+import com.papupupu.train.member.req.MemberLoginReq;
 import com.papupupu.train.member.req.MemberRegisterReq;
 import com.papupupu.train.member.req.MemberSendCodeReq;
+import com.papupupu.train.member.resp.MemberLoginResp;
 import com.papupupu.train.member.service.MemberService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,26 +20,28 @@ public class MemberController {
     private MemberService memberService;
 
     @GetMapping("/count")
-    public CommonResp count(){
+    public CommonResp<Integer> count(){
         int count = memberService.count();
-        CommonResp<Integer> resp = CommonResp.success(count);
-        return resp;
+        return CommonResp.success(count);
     }
 
     @PostMapping("/register")
-    public CommonResp register(@Valid MemberRegisterReq memberRegisterReq){
+    public CommonResp<Long> register(@Valid MemberRegisterReq memberRegisterReq){
         long id = memberService.register(memberRegisterReq);
-        CommonResp resp = CommonResp.success(id);
-        return resp;
+        return CommonResp.success(id);
     }
+
 
     @PostMapping("/send-code")
     public CommonResp sendCode(MemberSendCodeReq memberSendCodeReq){
         memberService.sendCode(memberSendCodeReq);
-        CommonResp resp = CommonResp.success();
-        return resp;
+        return CommonResp.success();
     }
 
 
-
+    @PostMapping("/login")
+    public CommonResp<MemberLoginResp> login(MemberLoginReq memberLoginReq){
+        MemberLoginResp memberLoginResp = memberService.login(memberLoginReq);
+        return CommonResp.success(memberLoginResp);
+    }
 }

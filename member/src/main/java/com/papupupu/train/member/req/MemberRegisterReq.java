@@ -11,7 +11,7 @@ import lombok.ToString;
 @Setter
 @ToString
 public class MemberRegisterReq {
-    @NotBlank(message = "手机号不能为空")
+    @NotBlank(message = "【手机号】不能为空")
     @Pattern(regexp = "^1\\d{10}$", message = "手机格式错误")
     private String mobile;
 }
