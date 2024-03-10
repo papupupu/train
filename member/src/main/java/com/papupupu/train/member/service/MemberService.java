@@ -106,7 +106,7 @@ public class MemberService {
             throw new BussinessException(BussinessExceptionEnum.SEND_CODE_ERROR);
         }
 
-
+        //生成token，并添加到返回的类中
         MemberLoginResp memberLoginResp = BeanUtil.copyProperties(memberDB, MemberLoginResp.class);
         memberLoginResp.setToken(JwtUtil.createToken(memberLoginResp.getId(), memberLoginResp.getMobile()));
         return memberLoginResp;

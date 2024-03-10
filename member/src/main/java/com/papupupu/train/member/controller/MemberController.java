@@ -41,4 +41,9 @@ public class MemberController {
         MemberLoginResp memberLoginResp = memberService.login(memberLoginReq);
         return CommonResp.success(memberLoginResp);
     }
+
+    @GetMapping("/hellow")
+    public CommonResp hellow(){
+        return CommonResp.success("hellow");
+    }
 }
