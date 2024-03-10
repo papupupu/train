@@ -7,15 +7,17 @@ import lombok.Setter;
 @Getter
 @Setter
 public class MemberLoginResp {
-    private String id;
+    private Long id;
     private String mobile;
+    private String token;
 
     @Override
     public String toString() {
-        final StringBuffer sb = new StringBuffer("MemberLoginResp{");
-        sb.append("id='").append(id).append('\'');
-        sb.append(", mobile='").append(mobile).append('\'');
-        sb.append('}');
-        return sb.toString();
+        final StringBuffer buffer = new StringBuffer("MemberLoginResp{");
+        buffer.append("id='").append(id).append('\'');
+        buffer.append(", mobile='").append(mobile).append('\'');
+        buffer.append(", token='").append(token).append('\'');
+        buffer.append('}');
+        return buffer.toString();
     }
 }

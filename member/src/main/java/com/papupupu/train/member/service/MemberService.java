@@ -6,6 +6,7 @@ import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.RandomUtil;
 import com.papupupu.train.common.exception.BussinessException;
 import com.papupupu.train.common.exception.BussinessExceptionEnum;
+import com.papupupu.train.common.util.JwtUtil;
 import com.papupupu.train.common.util.SnowUtil;
 import com.papupupu.train.member.domain.Member;
 import com.papupupu.train.member.domain.MemberExample;
@@ -28,39 +29,41 @@ public class MemberService {
     @Autowired
     private MemberMapper memberMapper;
 
-    public int count(){
+    public int count() {
         return Math.toIntExact(memberMapper.countByExample(null));
     }
 
     /**
      * 实现用户注册功能
+     *
      * @param memberRegisterReq
      * @return 新注册的用户id
      */
-   public long register(MemberRegisterReq memberRegisterReq){
-       String mobile = memberRegisterReq.getMobile();
-       Member memberDB = getByMobile(mobile);
-       if (ObjectUtil.isNotEmpty(memberDB)){
-           throw new BussinessException(BussinessExceptionEnum.MEMBER_MOBILE_EXIT);
-       }
-       Member member = new Member();
-       member.setId(SnowUtil.getSnowflakeNextId());
-       member.setMobile(mobile);
-       memberMapper.insert(member);
-       return member.getId();
-   }
+    public long register(MemberRegisterReq memberRegisterReq) {
+        String mobile = memberRegisterReq.getMobile();
+        Member memberDB = getByMobile(mobile);
+        if (ObjectUtil.isNotEmpty(memberDB)) {
+            throw new BussinessException(BussinessExceptionEnum.MEMBER_MOBILE_EXIT);
+        }
+        Member member = new Member();
+        member.setId(SnowUtil.getSnowflakeNextId());
+        member.setMobile(mobile);
+        memberMapper.insert(member);
+        return member.getId();
+    }
 
     /**
      * 实现用户发送验证码功能
+     *
      * @param memberSendCodeReq
      * @return 新注册的用户id
      */
-    public void sendCode(MemberSendCodeReq memberSendCodeReq){
+    public void sendCode(MemberSendCodeReq memberSendCodeReq) {
         String mobile = memberSendCodeReq.getMobile();
         Member memberDB = getByMobile(mobile);
 
         //手机号不存在，先进行注册
-        if (ObjectUtil.isEmpty(memberDB)){
+        if (ObjectUtil.isEmpty(memberDB)) {
             LOG.info("手机号不存在，先进行注册");
             Member member = new Member();
             member.setId(SnowUtil.getSnowflakeNextId());
@@ -81,27 +84,32 @@ public class MemberService {
         //接入短信通道
         LOG.info("接入短信通道");
     }
+
     /**
      * 实现用户登录功能
+     *
      * @param memberLoginReq
      * @return 新注册的用户id
      */
-    public MemberLoginResp login(MemberLoginReq memberLoginReq){
+    public MemberLoginResp login(MemberLoginReq memberLoginReq) {
         String mobile = memberLoginReq.getMobile();
 
         Member memberDB = getByMobile(mobile);
 
         //手机号不存在，先进行注册
-        if (ObjectUtil.isEmpty(memberDB)){
+        if (ObjectUtil.isEmpty(memberDB)) {
             throw new BussinessException(BussinessExceptionEnum.MEMBER_MOBILE_NOT_EXIT);
         }
 
         //校验验证码
-       if(!"8888".equals(memberLoginReq.getCode())){
-           throw new BussinessException(BussinessExceptionEnum.SEND_CODE_ERROR);
-       }
+        if (!"8888".equals(memberLoginReq.getCode())) {
+            throw new BussinessException(BussinessExceptionEnum.SEND_CODE_ERROR);
+        }
 
-        return BeanUtil.copyProperties(memberDB,  MemberLoginResp.class);
+
+        MemberLoginResp memberLoginResp = BeanUtil.copyProperties(memberDB, MemberLoginResp.class);
+        memberLoginResp.setToken(JwtUtil.createToken(memberLoginResp.getId(), memberLoginResp.getMobile()));
+        return memberLoginResp;
     }
 
     private Member getByMobile(String mobile) {
@@ -109,8 +117,8 @@ public class MemberService {
         memberExample.createCriteria().andMobileEqualTo(mobile);
         List<Member> members = memberMapper.selectByExample(memberExample);
 
-        if (CollUtil.isEmpty(members)){
-           return null;
+        if (CollUtil.isEmpty(members)) {
+            return null;
         } else {
             return members.get(0);
         }

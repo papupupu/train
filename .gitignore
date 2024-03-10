@@ -35,3 +35,4 @@ build/
 
 # 项目设置
 log/
+/web/
