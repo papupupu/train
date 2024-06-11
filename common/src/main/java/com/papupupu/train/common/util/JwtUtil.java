@@ -1,5 +1,9 @@
 package com.papupupu.train.common.util;
 
+
+import cn.hutool.core.date.DateField;
+import cn.hutool.core.date.DateTime;
+import cn.hutool.crypto.GlobalBouncyCastleProvider;
 import cn.hutool.json.JSONObject;
 import cn.hutool.jwt.JWT;
 import cn.hutool.jwt.JWTPayload;
@@ -7,73 +11,70 @@ import cn.hutool.jwt.JWTUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
+import java.util.Map;
 
 public class JwtUtil {
-    private static Logger LOG = LoggerFactory.getLogger(JwtUtil.class);
+    private static final Logger LOG = LoggerFactory.getLogger(JwtUtil.class);
+
+    /**
+     * 盐值很重要，不能泄漏，且每个项目都应该不一样，可以放到配置文件中
+     */
     private static final String key = "papupupu_train12306";
 
-    public static String createToken(Long id, String mobile){
-        LOG.info("开始生成token， id:{}, mobile:{}", id, mobile);
-        //此处的作用不详
-//        GlobalBouncyCastleProvider.setUseBouncyCastle(false);
-        HashMap<String, Object> payLoad = new HashMap<>();
-        LocalDateTime now = LocalDateTime.now();
-        //设置token为24小时过期
-        LocalDateTime expire = now.plus(24, ChronoUnit.HOURS);
-
-        //token注册时间
-        payLoad.put(JWTPayload.ISSUED_AT, now);
-        //token生效时间
-        payLoad.put(JWTPayload.NOT_BEFORE, now);
-        //token过期时间
-        payLoad.put(JWTPayload.EXPIRES_AT, expire);
-        payLoad.put("id", id);
-        payLoad.put("mobile", mobile);
-
-
-        String token = JWTUtil.createToken(payLoad, key.getBytes());
-        LOG.info("生成JWT token:{}", token);
+    public static String createToken(Long id, String mobile) {
+        LOG.info("开始生成JWT token，id：{}，mobile：{}", id, mobile);
+        GlobalBouncyCastleProvider.setUseBouncyCastle(false);
+        DateTime now = DateTime.now();
+        DateTime expTime = now.offsetNew(DateField.HOUR, 24);
+        Map<String, Object> payload = new HashMap<>();
+        // 签发时间
+        payload.put(JWTPayload.ISSUED_AT, now);
+        // 过期时间
+        payload.put(JWTPayload.EXPIRES_AT, expTime);
+        // 生效时间
+        payload.put(JWTPayload.NOT_BEFORE, now);
+        // 内容
+        payload.put("id", id);
+        payload.put("mobile", mobile);
+        String token = JWTUtil.createToken(payload, key.getBytes());
+        LOG.info("生成JWT token：{}", token);
         return token;
     }
 
-    public static boolean validate(String token){
-        LOG.info("开始检验token:{}", token);
-//        boolean verify = JWTUtil.verify(token, key.getBytes());
-        JWT jwt = JWTUtil.parseToken(token).setKey(key.getBytes());
+    public static boolean validate(String token) {
+        try {
+            LOG.info("开始JWT token校验，token：{}", token);
+            GlobalBouncyCastleProvider.setUseBouncyCastle(false);
+            JWT jwt = JWTUtil.parseToken(token).setKey(key.getBytes());
 
-        //此处的参数leeway指的是偏差，表示可以容忍的偏差时间,单位是秒
-        boolean verify = jwt.validate(0);
-        LOG.info("检验token:{}， 结果为:{}", token, verify);
-        return verify;
+            // validate包含了verify
+            boolean validate = jwt.validate(0);
+            LOG.info("JWT token校验结果：{}", validate);
+            return validate;
+        } catch (Exception e) {
+            LOG.error("JWT token校验异常", e);
+            return false;
+        }
     }
 
-    public static JSONObject getJSONObject(String token){
-        LOG.info("开始获取token的原始内容");
+    public static JSONObject getJSONObject(String token) {
+        GlobalBouncyCastleProvider.setUseBouncyCastle(false);
         JWT jwt = JWTUtil.parseToken(token).setKey(key.getBytes());
-        boolean validate = jwt.validate(0);
-        LOG.info("token是否过期:{}", !validate);
-        if(!validate){
-            return null;
-        }
         JSONObject payloads = jwt.getPayloads();
         payloads.remove(JWTPayload.ISSUED_AT);
-        payloads.remove(JWTPayload.NOT_BEFORE);
         payloads.remove(JWTPayload.EXPIRES_AT);
-
+        payloads.remove(JWTPayload.NOT_BEFORE);
         LOG.info("根据token获取原始内容：{}", payloads);
         return payloads;
     }
 
-
-    public  static void main(String[] args) {
-        String token = createToken(34L, "18670142513");
+    public static void main(String[] args) {
+//        String token = createToken(1765432068780724224L, "18670142513");
+        String token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJuYmYiOjE3MTAxMjQxNDYsIm1vYmlsZSI6IjE4NjcwMTQyNTEzIiwiaWQiOjE3NjU0MzIwNjg3ODA3MjQyMjQsImV4cCI6MTcxMDIxMDU0NiwiaWF0IjoxNzEwMTI0MTQ2fQ.2K_z-sxvAxcZDPdUBSbX9B3spYYIMTZWh-RUtYpPY2Y";
         System.out.println(token);
-        boolean validate = validate(token);
-        System.out.println(validate);
-        JSONObject jsonObject = getJSONObject(token);
-        System.out.println(jsonObject);
+        validate(token);
+        System.out.println(token);
+        getJSONObject(token);
     }
 }

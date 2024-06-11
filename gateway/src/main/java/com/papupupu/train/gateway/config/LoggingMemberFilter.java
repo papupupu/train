@@ -24,6 +24,7 @@ public class LoggingMemberFilter implements GlobalFilter, Ordered {
                 || path.contains("/member/member/login")
                 || path.contains("/member/member/register")
                 || path.contains("/member/member/send-code")
+//                || path.contains("/member/passenger")
         ) {
             LOG.info("不需要校验token");
             return chain.filter(exchange);

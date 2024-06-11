@@ -1,0 +1,16 @@
+server:
+  port: 8002
+  servlet:
+    context-path: /business
+
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://116.196.74.159/train_business?characterEncoding=UTF8&autoReconnect=true&serverTimezone=Asia/Shanghai
+    username: root
+    password: Zx20020624
+mybatis:
+  mapper-locations: classpath:/mapper/**/*.xml
+logging:
+  level:
+    com.papupupu.train.business.mapper: trace

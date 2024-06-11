@@ -1,0 +1,29 @@
+
+
+###
+POST http://localhost:8000/member/passenger/save
+Content-Type: application/json
+token: {{token}}
+
+{
+  "id":"1767217107608670208",
+  "memberId": "1765432068780724224",
+  "name": "王五",
+  "idCard": "3241234",
+  "type": "1"
+}
+
+###
+GET http://localhost:8000/member/passenger/query-list?page=1&size=100
+Accept: application/json
+token: {{token}}
+
+
+
+###
+DELETE http://localhost:8000/member/passenger/delete/1767217107608670208
+Accept: application/json
+token: {{token}}
+
+
+

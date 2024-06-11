@@ -92,23 +92,42 @@ public class MemberService {
      * @return 新注册的用户id
      */
     public MemberLoginResp login(MemberLoginReq memberLoginReq) {
-        String mobile = memberLoginReq.getMobile();
+//        String mobile = memberLoginReq.getMobile();
+//
+//        Member memberDB = getByMobile(mobile);
+//
+//        //手机号不存在，先进行注册
+//        if (ObjectUtil.isEmpty(memberDB)) {
+//            throw new BussinessException(BussinessExceptionEnum.MEMBER_MOBILE_NOT_EXIT);
+//        }
+//
+//        //校验验证码
+//        if (!"8888".equals(memberLoginReq.getCode())) {
+//            throw new BussinessException(BussinessExceptionEnum.SEND_CODE_ERROR);
+//        }
+//
+//        //生成token，并添加到返回的类中
+//        MemberLoginResp memberLoginResp = BeanUtil.copyProperties(memberDB, MemberLoginResp.class);
+//        memberLoginResp.setToken(JwtUtil.createToken(memberLoginResp.getId(), memberLoginResp.getMobile()));
+//        return memberLoginResp;
 
+        String mobile = memberLoginReq.getMobile();
+        String code = memberLoginReq.getCode();
         Member memberDB = getByMobile(mobile);
 
-        //手机号不存在，先进行注册
-        if (ObjectUtil.isEmpty(memberDB)) {
+        // 如果手机号不存在，则插入一条记录
+        if (ObjectUtil.isNull(memberDB)) {
             throw new BussinessException(BussinessExceptionEnum.MEMBER_MOBILE_NOT_EXIT);
         }
 
-        //校验验证码
-        if (!"8888".equals(memberLoginReq.getCode())) {
-            throw new BussinessException(BussinessExceptionEnum.SEND_CODE_ERROR);
+        // 校验短信验证码
+        if (!"8888".equals(code)) {
+            throw new BussinessException(BussinessExceptionEnum.MEMBER_MOBILE_NOT_EXIT);
         }
 
-        //生成token，并添加到返回的类中
         MemberLoginResp memberLoginResp = BeanUtil.copyProperties(memberDB, MemberLoginResp.class);
-        memberLoginResp.setToken(JwtUtil.createToken(memberLoginResp.getId(), memberLoginResp.getMobile()));
+        String token = JwtUtil.createToken(memberLoginResp.getId(), memberLoginResp.getMobile());
+        memberLoginResp.setToken(token);
         return memberLoginResp;
     }
 
